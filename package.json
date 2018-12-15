@@ -1,0 +1,32 @@
+{
+  "name": "collage",
+  "description": "A desktop collage/gallery hybrid app.",
+  "version": "0.1.0",
+  "license": "MPL-2.0",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "start": "electron src/electron/index.js"
+  },
+  "dependencies": {
+    "autolinker": "^1.8.1",
+    "electron": "^3.0.10",
+    "irc-framework": "^4.0.0",
+    "md5": "^2.2.1",
+    "spectre.css": "^0.5.7",
+    "vue": "^2.5.17",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.0.1",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  }
+}
