@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="card-footer text-right">
-                <button @click.prevent="submit" class="btn btn-primary btn-lg">Submit</button>
+                <button :disabled="this.newImages.length < 1" @click.prevent="submit" class="btn btn-primary btn-lg">Submit</button>
             </div>
         </div>
         <Collage
@@ -32,15 +32,20 @@
 </template>
 
 <script>
+import md5 from 'md5';
+import Database from '../Database';
 import Collage from './Collage.vue';
+import ImageManager from '../ImageManager';
 
 export default {
     name: 'Gallery',
     components: {
         Collage
     },
+    props: ['galleryId'],
     data() {
         return {
+            db: null,
             fileHovering: false,
             closeTimeout: null,
             collages: [],
@@ -50,9 +55,6 @@ export default {
         }
     },
     methods: {
-        lastCollage() {
-            return this.collages[this.collages.length-1];
-        },
         dragOver() {
             window.clearTimeout(this.closeTimeout);
             this.fileHovering = true;
@@ -64,46 +66,30 @@ export default {
             }, 500);
         },
         drop(event) {
-            const files = event.dataTransfer.files;            
-            const allowedTypes = [
-                'image/jpeg',
-                'image/jpg',
-                'image/png',
-                'image/gif'
-            ];
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (allowedTypes.includes(file.type)) {
-                    this.newImages.push('file://' + file.path);
-                }
-            }
-            this.dragLeave();
+            this.dragLeave();         
+            ImageManager.upload(event.dataTransfer.files)
+                .then(images => {
+                    for (let i=0; i < images.length; i++) {
+                        const image = images[i];
+                        this.newImages.push(`file://${image}`);
+                    }
+                })
+                .catch(e => console.log(e));
         },
         submit() {
-            this.collages.splice(0,0, {
-                id: this.lastCollage.id+1,
-                title: this.newTitle,
-                description: this.newDescription,
-                images: this.newImages
-            });
+            this.db.createCollage(this.galleryId, this.newTitle, this.newDescription, this.newImages)
+                // .then(collage => this.collages.splice(0,0, collage))
+                // .catch(e => console.log(e));
+            
             this.newImages = [];
             this.newTitle = '';
             this.newDescription = '';
         }
     },
     mounted() {
-        this.collages.push({
-            id: 0,
-            title: 'Post Title',
-            description: 'Optional description',
-            images: [
-                'file:///home/scotty/Pictures/wallpapers/arch1.png',
-                'file:///home/scotty/Pictures/wallpapers/background2.jpg',
-                'file:///home/scotty/Pictures/wallpapers/background3.jpg',
-                'file:///home/scotty/Pictures/wallpapers/background4.jpg',
-                'file:///home/scotty/Pictures/evh.png',
-            ]
-        });
+        this.db = new Database();
+        // Beware, this is reactive.
+        this.collages = this.db.getCollagesByGalleryId(this.galleryId);
     }
 }
 </script>

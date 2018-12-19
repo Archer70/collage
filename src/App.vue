@@ -3,13 +3,9 @@
         <header class="navbar">
             <section class="navbar-section">
                 <a class="navbar-brand mr-2">Collage</a>
-                <div class="input-group">
-                    <select class="form-select">
-                        <option v-for="(gallery, id) of galleries" :key="gallery + '_' + id">
-                            {{ gallery }}
-                        </option>
-                    </select>
-                </div>
+                <a class="btn btn-link" v-for="(gallery, id) in galleries" :key="id" @click.prevent="selectedGallery = id">
+                    {{ gallery.name }}
+                </a>
             </section>
             <section class="navbar-section">
                 <form @submit.prevent="addGallery">
@@ -20,12 +16,22 @@
                 <i class="icon icon-menu"></i>
             </section>
         </header>
-        <Gallery />
+        <Gallery v-if="selectedGallery" :gallery-id="selectedGallery" />
+        <div v-if="!selectedGallery" class="empty">
+            <div class="empty-icon">
+                <i class="icon icon-photo"></i>
+            </div>
+            <p class="empty-title h5">No gallery selected.</p>
+            <p class="empty-subtitle">Select on from the top menu, or you can create one using the "Create Gallery" field at the top-right.</p>
+        </div>
     </div>
 </template>
 
 <script>
-import Db from './database';
+import path from 'path';
+import app from 'electron';
+import Database from './Database';
+
 import Gallery from './components/Gallery.vue';
 
 export default {
@@ -34,26 +40,27 @@ export default {
     },
     data() {
         return {
+            db: null,
+            selectedGallery: null,
             galleries: [],
             newGalleryInput: '',
-            db: null,
         };
     },
     methods: {
         addGallery() {
-            this.db.saveGallery(this.newGalleryInput)
-                .then(result => {
-                    this.galleries.push(result.name);
-                })
-                .catch(error => alert('Failed to save gallery.'));
+            this.db.saveGallery(this.newGalleryInput);
+            this.galleries = this.db.getAllGalleries();
             this.newGalleryInput = '';
         }
     },
     mounted() {
-        this.db = new Db();
-        this.db.getAllGalleries()
-            .then(result => this.galleries = result)
-            .catch(error => window.alert('Problem loading galleries.'));
+        this.db = new Database();
+        this.galleries = this.db.getAllGalleries();
+        
+        const galleryIds = Object.keys(this.galleries);
+        if (galleryIds.length > 0) {
+            this.selectedGallery = galleryIds[0];
+        }
     }
 }
 </script>
@@ -68,5 +75,13 @@ body {
 
 #main-content {
     margin: 1rem 1rem 0 1rem;
+}
+
+.empty {
+    background: none;
+
+    .icon {
+        font-size: 32px;
+    }
 }
 </style>

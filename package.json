@@ -9,10 +9,9 @@
     "start": "electron src/electron/index.js"
   },
   "dependencies": {
-    "autolinker": "^1.8.1",
     "electron": "^3.0.10",
-    "irc-framework": "^4.0.0",
     "md5": "^2.2.1",
+    "mongodb": "^3.1.10",
     "spectre.css": "^0.5.7",
     "vue": "^2.5.17",
     "vuex": "^3.0.1"
