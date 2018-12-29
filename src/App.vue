@@ -2,13 +2,15 @@
     <div id="main-content">
         <header class="navbar">
             <section class="navbar-section">
-                <a class="navbar-brand mr-2">Collage</a>
-                <a class="btn btn-link" v-for="(gallery, id) in galleries" :key="id" @click.prevent="selectedGallery = id">
+                <a class="navbar-brand mr-2">
+                    <img id="nav-icon" src="./assets/64x64.png" alt="">
+                </a>
+                <a class="btn btn-link" v-for="(gallery, id) in galleries" :key="id" @click.prevent="changeGallery(id)">
                     {{ gallery.name }}
                 </a>
             </section>
             <section class="navbar-section">
-                <form @submit.prevent="addGallery">
+                <form @submit.prevent="addGallery(newGalleryInput); newGalleryInput=''">
                     <div class="input-group">
                         <input v-model="newGalleryInput" type="text" class="form-input mr-2" placeholder="Create Gallery">
                     </div>
@@ -16,8 +18,8 @@
                 <i class="icon icon-menu"></i>
             </section>
         </header>
-        <Gallery v-if="selectedGallery" :gallery-id="selectedGallery" />
-        <div v-if="!selectedGallery" class="empty">
+        <Gallery v-if="currentGallery" />
+        <div v-if="!currentGallery" class="empty">
             <div class="empty-icon">
                 <i class="icon icon-photo"></i>
             </div>
@@ -30,7 +32,7 @@
 <script>
 import path from 'path';
 import app from 'electron';
-import Database from './Database';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 import Gallery from './components/Gallery.vue';
 
@@ -38,30 +40,17 @@ export default {
     components: {
         Gallery
     },
+    computed: {
+        ...mapGetters(['currentGallery', 'galleries']),
+    },
     data() {
         return {
-            db: null,
-            selectedGallery: null,
-            galleries: [],
             newGalleryInput: '',
         };
     },
     methods: {
-        addGallery() {
-            this.db.saveGallery(this.newGalleryInput);
-            this.galleries = this.db.getAllGalleries();
-            this.newGalleryInput = '';
-        }
+        ...mapActions(['addGallery', 'changeGallery']),
     },
-    mounted() {
-        this.db = new Database();
-        this.galleries = this.db.getAllGalleries();
-        
-        const galleryIds = Object.keys(this.galleries);
-        if (galleryIds.length > 0) {
-            this.selectedGallery = galleryIds[0];
-        }
-    }
 }
 </script>
 
@@ -71,6 +60,10 @@ export default {
 
 body {
     background-repeat: repeat;
+}
+
+#nav-icon {
+    max-width: 48px;
 }
 
 #main-content {

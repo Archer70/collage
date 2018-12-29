@@ -1,9 +1,14 @@
 <template>
     <div class="group">
         <div @dragover.prevent="dragFile" @dragleave.prevent="undragFile" @drop.prevent="uploadFiles" class="card">
-            <div v-if="title || description" class="card-header">
-                <div v-if="title" class="card-title h5">{{ title }}</div>
-                <div v-if="description" class="card-subtitle text-gray">{{ description }}</div>
+            <div class="card-header">
+                <div class="card-title h5">
+                    <a @click.prevent="deleteCollage(collage.id)" class="float-right text-sm">
+                        <i class="icon icon-cross"></i>
+                    </a>
+                    <span v-if="collage.title">{{ collage.title }}</span>
+                </div>
+                <div v-if="collage.description" class="card-subtitle text-gray">{{ collage.description }}</div>
             </div>
             <div class="card-image">
                 <img @click.prevent="toggleModal(0)" class="img-responsive" :src="header" alt="" />
@@ -23,7 +28,7 @@
         </div>
 
         <PictureModal
-            :title="title"
+            :title="collage.title"
             :images="pictures"
             :selectedImage="selectedImage"
             :active="modalActive"
@@ -34,29 +39,23 @@
 <script>
 import PictureModal from './PictureModal.vue';
 import { setTimeout } from 'timers';
+import Database from '../Database';
+import { mapGetters } from 'vuex';
 
 export default {
-    name: 'PictureGroup',
+    name: 'Collage',
     components: {
         PictureModal
     },
     props: {
-        title: {
-            type: String,
-            default: null,
-        },
-        description: {
-            type: String,
-            default: null,
-        },
-        images: {
-            type: Array,
+        collage: {
+            type: Object,
             required: true,
-        }
+        },
     },
     data() {
         return {
-            pictures: this.images,
+            pictures: this.collage.images,
             selected: 0,
             modalActive: false,
             dragHover: false,
@@ -65,6 +64,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters(['currentGallery']),
         header() {
             return this.pictures[0];
         },
@@ -79,6 +79,12 @@ export default {
         }
     },
     methods: {
+        deleteCollage(id) {
+            const success = this.db.deleteCollage(id, this.galleryId);
+            if (success) {
+                this.$emit('deleted', id);
+            }
+        },
         toggleModal(id) {
             this.selected = id;
             this.modalActive = !this.modalActive;
@@ -112,6 +118,8 @@ export default {
             this.uploading = false;
             this.dragHover = false;
         }
+    },
+    mounted() {
     }
 }
 </script>

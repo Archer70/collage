@@ -24,16 +24,15 @@
         <Collage
             v-for="collage of collages"
             :key="collage.id"
-            :title="collage.title"
-            :description="collage.description"
-            :images="collage.images"
+            :collage="collage"
+            @deleted="removeCollage"
         />
     </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import md5 from 'md5';
-import Database from '../Database';
 import Collage from './Collage.vue';
 import ImageManager from '../ImageManager';
 
@@ -42,19 +41,28 @@ export default {
     components: {
         Collage
     },
-    props: ['galleryId'],
     data() {
         return {
-            db: null,
             fileHovering: false,
             closeTimeout: null,
-            collages: [],
             newTitle: '',
             newDescription: '',
             newImages: [],
         }
     },
+    computed: {
+        ...mapGetters(['collages']),
+    },
     methods: {
+        ...mapActions(['changeCollages', 'saveCollage']),
+        removeCollage(collageId) {
+            for (let index in this.collages) {
+                const collage = this.collages[index];
+                if (collageId == collage.id) {
+                    this.collages.splice(index, 1)
+                }
+            }
+        },
         dragOver() {
             window.clearTimeout(this.closeTimeout);
             this.fileHovering = true;
@@ -77,19 +85,15 @@ export default {
                 .catch(e => console.log(e));
         },
         submit() {
-            this.db.createCollage(this.galleryId, this.newTitle, this.newDescription, this.newImages)
-                // .then(collage => this.collages.splice(0,0, collage))
-                // .catch(e => console.log(e));
-            
+            this.saveCollage({
+                title: this.newTitle,
+                description: this.newDescription,
+                images: this.newImages
+            });
             this.newImages = [];
             this.newTitle = '';
             this.newDescription = '';
         }
-    },
-    mounted() {
-        this.db = new Database();
-        // Beware, this is reactive.
-        this.collages = this.db.getCollagesByGalleryId(this.galleryId);
     }
 }
 </script>

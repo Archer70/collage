@@ -52,19 +52,37 @@ class Database {
         return 'collages' in gallery ? gallery.collages : [];
     }
 
-    createCollage(galleryId, title, description, images) {
-        const collage = {
-            id: md5(new Date().getTime() + title + description + images),
-            title,
-            description,
-            images,
+    saveCollage(galleryId, collage) {
+        const collageInfo = {
+            id: md5(new Date().getTime() + collage.title + collage.description + collage.images),
+            title: collage.title,
+            description: collage.description,
+            images: collage.images,
         };
 
         // Prepend and save.
-        this.config.galleries[galleryId].collages.splice(0, 0, collage);
+        this.config.galleries[galleryId].collages.splice(0, 0, collageInfo);
         this.saveConfig();
         
-        return collage;
+        return collageInfo;
+    }
+
+    deleteCollage(id, galleryId) {
+        if (!(galleryId in this.config.galleries))  {
+            return false;
+        }
+
+        const collages = this.config.galleries[galleryId].collages;
+        for (let index in collages) {
+            const collage = collages[index];
+            if (collage.id == id) {
+                this.config.galleries[galleryId].collages.splice(index, 1);
+                this.saveConfig();
+                break;
+            }
+        }
+
+        return true;
     }
 }
 
