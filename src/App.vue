@@ -10,21 +10,68 @@
                 </a>
             </section>
             <section class="navbar-section">
-                <form @submit.prevent="addGallery(newGalleryInput); newGalleryInput=''">
-                    <div class="input-group">
-                        <input v-model="newGalleryInput" type="text" class="form-input mr-2" placeholder="Create Gallery">
-                    </div>
-                </form>
-                <i class="icon icon-menu"></i>
+                <i @click.prevent="settingsOpen = true;" class="icon icon-menu"></i>
             </section>
         </header>
+
         <Gallery v-if="currentGallery" />
+
         <div v-if="!currentGallery" class="empty">
             <div class="empty-icon">
                 <i class="icon icon-photo"></i>
             </div>
             <p class="empty-title h5">No gallery selected.</p>
             <p class="empty-subtitle">Select on from the top menu, or you can create one using the "Create Gallery" field at the top-right.</p>
+        </div>
+
+        <div v-if="settingsOpen" class="modal active" id="modal-id">
+            <a @click.prevent="settingsOpen = false;" href="#close" class="modal-overlay" aria-label="Close"></a>
+            <div class="modal-container">
+                <div class="modal-header">
+                    <a @click.prevent="settingsOpen = false;" href="#close" class="btn btn-clear float-right" aria-label="Close"></a>
+                    <div class="modal-title h5">Settings</div>
+                </div>
+                <div class="modal-body">
+                    <div class="content">
+                        <ul class="tab tab-block mb-2">
+                            <li :class="'tab-item' + (settingsBackgroundOpen ? ' active': '')">
+                                <a @click.prevent="settingsGalleriesOpen = false; settingsBackgroundOpen = true;" href="#">Background</a>
+                            </li>
+                            <li :class="'tab-item' + (settingsGalleriesOpen ? ' active': '')">
+                                <a @click.prevent="settingsGalleriesOpen = true; settingsBackgroundOpen = false;" href="#">Galleries</a>
+                            </li>
+                        </ul>
+
+                        <div v-if="settingsBackgroundOpen">
+                            <form @submit.prevent="changeBackground">
+                                <div class="form-group">
+                                    <input class="form-input" type="file" placeholder="Background Image">
+                                </div>
+                                <div class="btn-group btn-group-block">
+                                    <input class="btn btn-error" type="button" value="Reset Default">
+                                    <input class="btn btn-primary" type="submit" value="Upload">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div v-if="settingsGalleriesOpen">
+                            <form @submit.prevent="addGallery(newGalleryInput); newGalleryInput=''" newGalleryInput=''>
+                                <div class="input-group">
+                                    <input v-model="newGalleryInput" class="form-input" type="input" placeholder="Gallery Name">
+                                    <input class="btn btn-primary input-group-btn" type="submit" value="Create">
+                                </div>
+                            </form>
+                            <div class="divider"></div>
+                            <p v-for="(gallery, id) in galleries" :key="id">
+                                <button class="btn btn-error btn-sm s-circle mr-2">
+                                    <i class="icon icon-delete"></i>
+                                </button>
+                                {{ gallery.name }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -46,6 +93,9 @@ export default {
     data() {
         return {
             newGalleryInput: '',
+            settingsOpen: false,
+            settingsBackgroundOpen: true,
+            settingsGalleriesOpen: false,
         };
     },
     methods: {
@@ -64,6 +114,10 @@ body {
 
 #nav-icon {
     max-width: 48px;
+}
+
+.tab-item {
+    outline: none;
 }
 
 #main-content {
