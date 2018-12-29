@@ -62,8 +62,8 @@
                                 </div>
                             </form>
                             <div class="divider"></div>
-                            <p v-for="(gallery, id) in galleries" :key="id">
-                                <button class="btn btn-error btn-sm s-circle mr-2">
+                            <p v-for="gallery in galleries" :key="gallery.id">
+                                <button @click.prevent="deleteGallery(gallery.id)" class="btn btn-error btn-sm s-circle mr-2">
                                     <i class="icon icon-delete"></i>
                                 </button>
                                 {{ gallery.name }}
@@ -99,7 +99,7 @@ export default {
         };
     },
     methods: {
-        ...mapActions(['addGallery', 'changeGallery']),
+        ...mapActions(['addGallery', 'changeGallery', 'deleteGallery']),
     },
 }
 </script>

@@ -44,9 +44,12 @@ export default new Vuex.Store({
             commit('changeCollages', db.getCollagesByGalleryId(galleryId));
         },
         saveCollage({ commit, state }, collage) {
-            console.log(collage)
             db.saveCollage(state.currentGallery, collage);
             commit('saveCollage', collage);
+        },
+        deleteGallery({ commit }, galleryId) {
+            db.deleteGallery(galleryId);
+            commit('updateGalleries', db.getAllGalleries());
         }
     }
 });

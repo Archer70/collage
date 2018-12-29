@@ -32,7 +32,13 @@ class Database {
     }
 
     saveGallery(name) {
-        this.config.galleries[md5(name)] = {
+        if (name in this.config.galleries) {
+            return;
+        }
+        
+        const id = md5(name);
+        this.config.galleries[id] = {
+            id,
             name,
             collages: [],
         };
@@ -40,7 +46,20 @@ class Database {
     }
 
     getAllGalleries() {
-        return this.config.galleries;
+        // Vue wants to bind to the actual config object, and it causes problems.
+        const copy = {};
+        Object.assign(copy, this.config.galleries);
+        return copy;
+    }
+
+    deleteGallery(galleryId) {
+        if (!(galleryId in this.config.galleries)) {
+            return;
+        }
+
+        delete this.config.galleries[galleryId];
+        
+        this.saveConfig();
     }
 
     getCollagesByGalleryId(id) {
