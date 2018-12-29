@@ -40,7 +40,7 @@
 import PictureModal from './PictureModal.vue';
 import { setTimeout } from 'timers';
 import Database from '../Database';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'Collage',
@@ -79,12 +79,7 @@ export default {
         }
     },
     methods: {
-        deleteCollage(id) {
-            const success = this.db.deleteCollage(id, this.galleryId);
-            if (success) {
-                this.$emit('deleted', id);
-            }
-        },
+        ...mapActions(['deleteCollage']),
         toggleModal(id) {
             this.selected = id;
             this.modalActive = !this.modalActive;
