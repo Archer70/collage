@@ -2,9 +2,6 @@
     <div id="main-content">
         <header class="navbar">
             <section class="navbar-section">
-                <a class="navbar-brand mr-2">
-                    <img id="nav-icon" src="./assets/64x64.png" alt="">
-                </a>
                 <a class="btn btn-link" v-for="(gallery, id) in galleries" :key="id" @click.prevent="changeGallery(id)">
                     {{ gallery.name }}
                 </a>
@@ -43,15 +40,10 @@
                         </ul>
 
                         <div v-if="settingsBackgroundOpen">
-                            <form @submit.prevent="changeBackground">
-                                <div class="form-group">
-                                    <input class="form-input" type="file" placeholder="Background Image">
-                                </div>
-                                <div class="btn-group btn-group-block">
-                                    <input class="btn btn-error" type="button" value="Reset Default">
-                                    <input class="btn btn-primary" type="submit" value="Upload">
-                                </div>
-                            </form>
+                            <file-drop @dropped="f => changeBackground(f[0])" />
+                            <div class="btn-group">
+                                <input @click.prevent="changeBackground('')" class="btn btn-error" type="button" value="Clear">
+                            </div>
                         </div>
 
                         <div v-if="settingsGalleriesOpen">
@@ -78,17 +70,18 @@
 
 <script>
 import path from 'path';
-import app from 'electron';
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import Gallery from './components/Gallery.vue';
+import FileDrop from './components/FileDrop.vue';
 
 export default {
     components: {
-        Gallery
+        Gallery,
+        FileDrop,
     },
     computed: {
-        ...mapGetters(['currentGallery', 'galleries']),
+        ...mapGetters(['currentGallery', 'galleries', 'background']),
     },
     data() {
         return {
@@ -98,9 +91,26 @@ export default {
             settingsGalleriesOpen: false,
         };
     },
-    methods: {
-        ...mapActions(['addGallery', 'changeGallery', 'deleteGallery']),
+    watch: {
+        background(url) {
+            this.loadBackground(url)
+        }
     },
+    methods: {
+        ...mapActions([
+            'addGallery',
+            'changeGallery',
+            'deleteGallery',
+            'changeBackground'
+        ]),
+        loadBackground(url) {
+            document.body.style.backgroundImage = `url(${url})`;
+        }
+    },
+    mounted() {
+        // Apply background from initial state.
+        this.loadBackground(this.background);
+    }
 }
 </script>
 
@@ -108,20 +118,18 @@ export default {
 @import './css/main.scss';
 @import './css/variables.scss';
 
-body {
-    background-repeat: repeat;
-}
-
-#nav-icon {
-    max-width: 48px;
-}
-
-.tab-item {
-    outline: none;
+html, body {
+    background-repeat: none;
+    margin: 0;
+    padding: 0;
 }
 
 #main-content {
-    margin: 1rem 1rem 0 1rem;
+    .navbar {
+        background: $background;
+        padding: $spacing $double-spacing;
+        border-bottom: 1px solid $light-border;
+    }
 }
 
 .empty {

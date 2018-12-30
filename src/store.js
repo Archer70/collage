@@ -1,26 +1,33 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Database from './Database';
+import ImageManager from './ImageManager';
 
 Vue.use(Vuex)
 
 const db = new Database();
+const background = db.getBackground();
 const galleries = db.getAllGalleries();
 const currentGallery = Object.keys(galleries).length > 0 ? Object.keys(galleries)[0] : '';
 const collages = currentGallery != '' ? galleries[currentGallery].collages : [];
 
 export default new Vuex.Store({
     state: {
+        background,
         currentGallery,
         galleries,
         collages,
     },
     getters: {
+        background: state => state.background,
         currentGallery: state => state.currentGallery,
         galleries: state => state.galleries,
         collages: state => state.collages,
     },
     mutations: {
+        changeBackground(state, path) {
+            state.background = path;
+        },
         changeGallery(state, id) {
             state.currentGallery = id;
         },
@@ -35,6 +42,10 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        changeBackground({ commit }, path) {
+            db.saveBackground(path);
+            commit('changeBackground', path);
+        },
         addGallery({ commit }, gallery) {
             db.saveGallery(gallery);
             commit('updateGalleries', db.getAllGalleries());

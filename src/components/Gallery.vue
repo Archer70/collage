@@ -103,8 +103,13 @@ export default {
 
 .gallery-container {
     margin: 0 auto;
-    width: 500px;
+    width: 600px;
     min-height: 100px;
+    background: $background;
+    padding: $double-spacing 50px;
+    border-left: 1px solid $light-border;
+    border-right: 1px solid $light-border;
+    border-bottom: 1px solid $light-border;
 
     .new-post {
         margin-bottom: 1rem;

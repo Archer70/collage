@@ -19,6 +19,7 @@ class Database {
         }
         if (!fs.existsSync(this.configPath)) {
             fs.writeFileSync(this.configPath, JSON.stringify({
+                background: '',
                 galleries: {},
             }));
         }
@@ -29,6 +30,15 @@ class Database {
     // Async, cause we probably don't care enough to wait for it.
     saveConfig() {
         fs.writeFile(this.configPath, JSON.stringify(this.config), e => {});
+    }
+
+    saveBackground(path) {
+        this.config.background = path;
+        this.saveConfig();
+    }
+
+    getBackground() {
+        return this.config.background;
     }
 
     saveGallery(name) {

@@ -24,6 +24,8 @@ class ImageManager {
                     ImageManager.copyFile(file)
                         .then(path => newImages.push(path))
                         .catch(e => reject(e));
+                } else {
+                    reject('Invalid file type.')
                 }
             }
             resolve(newImages);
