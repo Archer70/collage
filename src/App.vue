@@ -15,10 +15,13 @@
 
         <div v-if="!currentGallery" class="empty">
             <div class="empty-icon">
-                <i class="icon icon-photo"></i>
+                <i class="head-icon icon icon-photo"></i>
             </div>
             <p class="empty-title h5">No gallery selected.</p>
-            <p class="empty-subtitle">Select on from the top menu, or you can create one using the "Create Gallery" field at the top-right.</p>
+            <p class="empty-subtitle">
+                Select on from the top menu, or you can create one from the settings panel
+                ( <i class="icon icon-menu"></i> ) located at the top-right of the page.
+            </p>
         </div>
 
         <div v-if="settingsOpen" class="modal active" id="modal-id">
@@ -133,9 +136,16 @@ html, body {
 }
 
 .empty {
-    background: none;
+    margin: 0 auto;
+    width: 600px;
+    min-height: 100px;
+    background: $background;
+    padding: $double-spacing 50px;
+    border-left: 1px solid $light-border;
+    border-right: 1px solid $light-border;
+    border-bottom: 1px solid $light-border;
 
-    .icon {
+    .head-icon {
         font-size: 32px;
     }
 }
