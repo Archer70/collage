@@ -6,8 +6,7 @@
   "main": "src/electron/launchers/built.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "compile": "vue-cli-service build",
-    "build": "electron-packager . --overwrite",
+    "build": "vue-cli-service build; electron-packager . --overwrite",
     "start-dev": "electron src/electron/launchers/live.js"
   },
   "dependencies": {

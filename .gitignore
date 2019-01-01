@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 dist
-collage-linux-x64
+collage-*-*
 
 # local env files
 .env.local
